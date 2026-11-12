@@ -5,6 +5,7 @@
 #include "ast.h"
 #include "symbol_table.h"
 #include "semantic.h"
+#include "tac.h"
 
 int yyparse(void);
 
@@ -12,7 +13,7 @@ extern ASTNode *root;
 
 int main(void) {
 
-    /* Initialize the parser's symbol table. */
+    /* Initialize the symbol table. */
     symbol_table_init();
 
     printf("===== CodePilot Studio MiniLang Compiler =====\n");
@@ -36,26 +37,35 @@ int main(void) {
 
     ast_print(root, 0);
 
-    /* Display the parser's symbol table. */
+    /* Display Symbol Table. */
     symbol_table_print();
 
     /* Perform semantic analysis. */
     int semantic_result = semantic_analyze(root);
 
-    /* Free AST memory. */
-    ast_free(root);
-    root = NULL;
-
-    /* Clean up the parser's symbol table. */
-    symbol_table_cleanup();
-
-    /* Check final compilation result. */
+    /* Stop if semantic errors exist. */
     if (!semantic_result) {
 
         printf("\nCompilation failed due to semantic errors.\n");
 
+        ast_free(root);
+        root = NULL;
+
+        symbol_table_cleanup();
+
         return EXIT_FAILURE;
     }
+
+    /* Generate Three Address Code. */
+    tac_generate(root);
+
+    /* Release allocated memory. */
+    tac_cleanup();
+
+    ast_free(root);
+    root = NULL;
+
+    symbol_table_cleanup();
 
     printf("\nCompilation completed successfully.\n");
 

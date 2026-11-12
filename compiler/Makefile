@@ -18,7 +18,7 @@ lex.yy.c: src/lexer/lexer.l parser.tab.h
 	$(FLEX) -o lex.yy.c src/lexer/lexer.l
 
 # Compile main file
-main.o: src/main.c include/ast.h include/symbol_table.h include/semantic.h
+main.o: src/main.c include/ast.h include/symbol_table.h include/semantic.h include/tac.h
 	$(CC) $(CFLAGS) -c src/main.c -o main.o
 
 # Compile AST implementation
@@ -33,6 +33,10 @@ symbol_table.o: src/symbol_table/symbol_table.c include/symbol_table.h
 semantic.o: src/semantic/semantic.c include/semantic.h include/ast.h
 	$(CC) $(CFLAGS) -c src/semantic/semantic.c -o semantic.o
 
+# Compile TAC generator
+tac.o: src/tac/tac.c include/tac.h include/ast.h
+	$(CC) $(CFLAGS) -c src/tac/tac.c -o tac.o
+
 # Compile parser
 parser.tab.o: parser.tab.c include/ast.h include/symbol_table.h
 	$(CC) $(CFLAGS) -c parser.tab.c -o parser.tab.o
@@ -42,8 +46,8 @@ lex.yy.o: lex.yy.c
 	$(CC) $(CFLAGS) -c lex.yy.c -o lex.yy.o
 
 # Link all object files
-$(TARGET): main.o ast.o symbol_table.o semantic.o parser.tab.o lex.yy.o
-	$(CC) $(CFLAGS) -o $(TARGET) main.o ast.o symbol_table.o semantic.o parser.tab.o lex.yy.o
+$(TARGET): main.o ast.o symbol_table.o semantic.o tac.o parser.tab.o lex.yy.o
+	$(CC) $(CFLAGS) -o $(TARGET) main.o ast.o symbol_table.o semantic.o tac.o parser.tab.o lex.yy.o
 
 # Remove generated files
 clean:
