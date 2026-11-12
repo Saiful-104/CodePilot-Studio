@@ -1,0 +1,265 @@
+
+/* ===== Global Styles ===== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #0b1120;
+  color: #e2e8f0;
+}
+
+button,
+select,
+textarea {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  background: #0b1120;
+}
+
+/* ===== Navbar ===== */
+
+.navbar {
+  height: 68px;
+  padding: 0 5%;
+  background: #111827;
+  border-bottom: 1px solid #263247;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 21px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.brand-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-size: 17px;
+}
+
+.navbar-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+/* ===== Main Workspace ===== */
+
+.workspace {
+  width: 90%;
+  max-width: 1400px;
+  margin: 32px auto;
+}
+
+/* ===== Toolbar ===== */
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.language-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.language-control label {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.language-control select {
+  min-width: 170px;
+  padding: 11px 14px;
+  color: #e2e8f0;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+}
+
+.language-control select:focus {
+  border-color: #3b82f6;
+}
+
+.run-button {
+  padding: 11px 22px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.run-button:hover {
+  background: #1d4ed8;
+}
+
+.run-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== Editor ===== */
+
+.editor-section,
+.input-section,
+.output-section {
+  overflow: hidden;
+  margin-bottom: 22px;
+  background: #111827;
+  border: 1px solid #263247;
+  border-radius: 10px;
+}
+
+.section-heading {
+  min-height: 45px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1e293b;
+  border-bottom: 1px solid #263247;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== Custom Input ===== */
+
+.input-section textarea {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  resize: vertical;
+  color: #e2e8f0;
+  background: #111827;
+  border: none;
+  outline: none;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.input-section textarea::placeholder {
+  color: #64748b;
+}
+
+/* ===== Output Panel ===== */
+
+.output-content {
+  min-height: 130px;
+  padding: 16px;
+  background: #0f172a;
+}
+
+.output-text,
+.error-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.output-text {
+  color: #86efac;
+}
+
+.error-text {
+  margin-top: 10px;
+  color: #f87171;
+}
+
+.empty-output {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ===== Responsive Design ===== */
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 5%;
+  }
+
+  .brand {
+    font-size: 17px;
+  }
+
+  .navbar-status {
+    font-size: 11px;
+  }
+
+  .workspace {
+    width: 94%;
+    margin: 22px auto;
+  }
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .language-control {
+    flex: 1;
+  }
+
+  .language-control select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .run-button {
+    align-self: end;
+    padding: 11px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-status {
+    display: none;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .run-button {
+    width: 100%;
+  }
+}
