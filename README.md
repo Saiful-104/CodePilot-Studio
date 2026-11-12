@@ -67,3 +67,4 @@ The goal is to combine compiler construction concepts with a web-based coding in
 ## Project Status
 
 Under development.
+find . -maxdepth 3 -type f | sort

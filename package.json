@@ -1,0 +1,10 @@
+{
+  "name": "codepilot-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web-based multi-language code execution platform with a MiniLang compiler",
+  "scripts": {
+    "frontend": "npm --prefix frontend run dev",
+    "backend": "npm --prefix backend run dev"
+  }
+}

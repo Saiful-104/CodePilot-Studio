@@ -1,0 +1,16 @@
+
+int age = 24;
+float score = 85.5;
+bool passed = true;
+
+print(age);
+print(score);
+print(passed);
+
+if (age >= 18) {
+    print(age);
+}
+
+while (age > 20) {
+    age = age - 1;
+}

@@ -1,5 +1,9 @@
+.PHONY: all compiler clean
 
-# Compiler tools
-CC = gcc
-FLEX = flex
-BISON = bison
+all: compiler
+
+compiler:
+	$(MAKE) -C compiler
+
+clean:
+	$(MAKE) -C compiler clean

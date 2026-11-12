@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+*.o
+*.log
+compiler/parser.tab.c
+compiler/parser.tab.h
+compiler/lex.yy.c
+compiler/codepilot
+backend/temp/
+backend/uploads/
