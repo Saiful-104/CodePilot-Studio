@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const compilerRoutes = require("./routes/compilerRoutes");
+const executionRoutes = require("./routes/executionRoutes");
 
 const app = express();
 
@@ -19,8 +20,11 @@ app.get("/", (req, res) => {
   });
 });
 
-// Compiler API routes
+// MiniLang Compiler API
 app.use("/api/compiler", compilerRoutes);
+
+// C, C++ and Java Execution API
+app.use("/api/execute", executionRoutes);
 
 // Server configuration
 const PORT = process.env.PORT || 5000;

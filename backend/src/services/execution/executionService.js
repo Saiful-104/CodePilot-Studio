@@ -6,29 +6,45 @@ const path = require("path");
 
 const TIMEOUT = 5000;
 const MAX_OUTPUT_SIZE = 1024 * 1024;
-
+const JAVA_HOME =
+  process.env.JAVA_HOME ||
+  "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.13.9-hotspot";
 function executeCode(language, sourceCode, input = "") {
   return new Promise((resolve, reject) => {
-    const commands = {
+    const configurations = {
       c: {
         source: "main.c",
         executable: "program.exe",
         compiler: "gcc",
-        args: ["main.c", "-o", "program.exe"],
+        compileArgs: ["main.c", "-o", "program.exe"],
         run: "program.exe",
         runArgs: [],
       },
+
       cpp: {
         source: "main.cpp",
         executable: "program.exe",
         compiler: "g++",
-        args: ["main.cpp", "-o", "program.exe"],
+        compileArgs: ["main.cpp", "-o", "program.exe"],
         run: "program.exe",
         runArgs: [],
       },
+
+      java: {
+        source: "Main.java",
+        executable: "Main.class",
+        compiler: JAVA_HOME
+          ? path.join(JAVA_HOME, "bin", "javac.exe")
+          : "javac",
+        compileArgs: ["Main.java"],
+        run: JAVA_HOME
+          ? path.join(JAVA_HOME, "bin", "java.exe")
+          : "java",
+        runArgs: ["Main"],
+      },
     };
 
-    const config = commands[language];
+    const config = configurations[language];
 
     if (!config) {
       return reject(new Error("Unsupported language."));
@@ -42,12 +58,13 @@ function executeCode(language, sourceCode, input = "") {
       return reject(new Error("Source code is too large."));
     }
 
+    if (typeof input !== "string") {
+      return reject(new Error("Input must be a string."));
+    }
+
     const tempDir = fs.mkdtempSync(
       path.join(os.tmpdir(), "codepilot-")
     );
-
-    const sourcePath = path.join(tempDir, config.source);
-    const executablePath = path.join(tempDir, config.executable);
 
     let finished = false;
     let timer;
@@ -67,10 +84,11 @@ function executeCode(language, sourceCode, input = "") {
       return true;
     };
 
-    const result = (data) => {
-      if (!cleanup()) return;
-      resolve(data);
+    const finish = (result) => {
+      if (cleanup()) resolve(result);
     };
+
+    const sourcePath = path.join(tempDir, config.source);
 
     try {
       fs.writeFileSync(sourcePath, sourceCode, "utf8");
@@ -81,19 +99,19 @@ function executeCode(language, sourceCode, input = "") {
 
     const compile = spawn(
       config.compiler,
-      config.args,
+      config.compileArgs,
       {
         cwd: tempDir,
         windowsHide: true,
       }
     );
 
-    let compileError = "";
     let compileOutput = "";
+    let compileError = "";
 
     timer = setTimeout(() => {
       compile.kill();
-      result({
+      finish({
         success: false,
         output: compileOutput,
         error: "Compilation timed out.",
@@ -105,7 +123,7 @@ function executeCode(language, sourceCode, input = "") {
 
       if (compileOutput.length > MAX_OUTPUT_SIZE) {
         compile.kill();
-        result({
+        finish({
           success: false,
           output: "",
           error: "Compilation output limit exceeded.",
@@ -118,7 +136,7 @@ function executeCode(language, sourceCode, input = "") {
 
       if (compileError.length > MAX_OUTPUT_SIZE) {
         compile.kill();
-        result({
+        finish({
           success: false,
           output: "",
           error: "Compilation error output limit exceeded.",
@@ -139,7 +157,7 @@ function executeCode(language, sourceCode, input = "") {
       clearTimeout(timer);
 
       if (exitCode !== 0) {
-        return result({
+        return finish({
           success: false,
           output: compileOutput,
           error: compileError || "Compilation failed.",
@@ -148,7 +166,7 @@ function executeCode(language, sourceCode, input = "") {
       }
 
       const run = spawn(
-        executablePath,
+        config.run,
         config.runArgs,
         {
           cwd: tempDir,
@@ -161,7 +179,7 @@ function executeCode(language, sourceCode, input = "") {
 
       timer = setTimeout(() => {
         run.kill();
-        result({
+        finish({
           success: false,
           output,
           error: "Program execution timed out.",
@@ -173,7 +191,7 @@ function executeCode(language, sourceCode, input = "") {
 
         if (output.length > MAX_OUTPUT_SIZE) {
           run.kill();
-          result({
+          finish({
             success: false,
             output: "",
             error: "Program output limit exceeded.",
@@ -186,7 +204,7 @@ function executeCode(language, sourceCode, input = "") {
 
         if (runtimeError.length > MAX_OUTPUT_SIZE) {
           run.kill();
-          result({
+          finish({
             success: false,
             output: "",
             error: "Runtime error output limit exceeded.",
@@ -204,7 +222,7 @@ function executeCode(language, sourceCode, input = "") {
       run.on("close", (runExitCode) => {
         if (finished) return;
 
-        result({
+        finish({
           success: runExitCode === 0,
           output,
           error: runtimeError,
